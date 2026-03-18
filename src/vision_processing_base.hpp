@@ -32,5 +32,7 @@ private:
   mutable std::mutex frame_mutex_;
   cv::Mat last_frame_;
   bool has_frame_{false};
+
+  cv::VideoWriter writer_;
 };
 

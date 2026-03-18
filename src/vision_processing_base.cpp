@@ -83,8 +83,19 @@ VisionProcessingBase::VisionProcessingBase(rclcpp::Node & node,
 void VisionProcessingBase::imageCallback(const sensor_msgs::msg::Image::ConstSharedPtr msg)
 {
   try {
-    cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvShare(msg, "mono8");
+    cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvShare(msg, "bgr8");
     cv::Mat current_frame = cv_ptr->image.clone();
+
+    int frame_width = current_frame.cols;
+        int frame_height = current_frame.rows;
+        double fps = 30.0; 
+
+    std::string pipeline = "appsrc ! videoconvert ! video/x-raw, format=I420 ! x264enc tune=zerolatency bitrate=500 ! "
+                            "rtph264pay config-interval=1 pt=96 ! "
+                            "udpsink host=127.0.0.1 port=5600";
+
+    writer_.open(pipeline, cv::CAP_GSTREAMER, 0, fps, cv::Size(frame_width, frame_height));
+
 
     if (trackingActive) {
       if (!trackerInitialized) {
@@ -119,6 +130,7 @@ void VisionProcessingBase::imageCallback(const sensor_msgs::msg::Image::ConstSha
       trackerInitialized = false; // Prepare for new initialization
     }  
 
+    writer_.write(current_frame);
     cv::imshow("Live Feed", current_frame);
     cv::waitKey(1);
     

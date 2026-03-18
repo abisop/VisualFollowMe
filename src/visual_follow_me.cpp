@@ -21,6 +21,8 @@ float pitch_deg = 0;
 int g_key ;
 std::map<uint16_t, bool> key_states_;
 
+
+
 //==============================================================================================================================================
 
 
@@ -87,12 +89,13 @@ public:
   { 
     if (!_vehicle_local_position->positionXYValid()) return;
 
-    if (!_target_set) {
-      _target_position = _vehicle_local_position->positionNed() + Eigen::Vector3f(5.f, 0.f, -2.f);
+    if (!_target_set && isTracking == 1) {
+      _target_position = _vehicle_local_position->positionNed() + Eigen::Vector3f(10.f, 0.f, 0.f);
+      _goto_setpoint->update(_target_position);
       _target_set = true;
     }
 
-    _goto_setpoint->update(_target_position);
+    
   }
 
 
@@ -105,9 +108,12 @@ private:
       if (msg->data.size() < 2) return;
 
       // Convert pixels to angles (Example: -45 to +45 degrees)
-      if(msg->data[2] == 1) { // 0 : notTracking
+      isTracking = msg->data[2];
+      if(isTracking == 1) { // 0 : notTracking
         yaw_deg = (static_cast<float>(msg->data[0]) / 1280.0f * 160.0f) - 80.0f;
         pitch_deg = 45 -  (static_cast<float>(msg->data[1]) / 720.0f * 90.0f);
+
+        RCLCPP_INFO(node().get_logger(), "Tracking");
       }
       else {
         yaw_deg = 0;
@@ -189,6 +195,8 @@ private:
     bool _target_set{false};
 
     rclcpp::TimerBase::SharedPtr timer_;
+
+    bool isTracking = 0;
 
 };
 
