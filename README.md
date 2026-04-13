@@ -7,7 +7,7 @@ Maintainer - Abhishek Choithani [abhishekchoithani24@gmail.com]
 - Controller - PX4-Autopilot
 - MiddleWare - ROS2
 - SImulation Environment - Gazebo
-
+- OS - Linux
 ## PROGRESS = 
 [![Watch the video](https://youtu.be/b949Aj38SJo?si=18CvUt9wCtM_kZ8C)](https://youtu.be/b949Aj38SJo?si=18CvUt9wCtM_kZ8C)
 [![Watch the video](https://youtu.be/rgRirQYW4xk)](https://youtu.be/rgRirQYW4xk)
